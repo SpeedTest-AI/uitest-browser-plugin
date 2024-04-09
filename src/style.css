@@ -1,0 +1,66 @@
+/* styles.css */
+.flex-container {
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+}
+
+.flex-item {
+        display: flex;
+        align-items: center;
+        margin-right: 10px;
+}
+
+select,
+textarea {
+        padding: 4px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+        font-size: 12px;
+}
+
+button {
+        background-color: #634F7D;
+        color: white;
+        cursor: pointer;
+        font-size: 14px;
+        padding: 4px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+}
+
+button:hover {
+        background-color: green;
+}
+
+.little-button {
+        background-color: white;
+        color: black;
+        cursor: pointer;
+        border: 1px solid #634F7D;
+        font-size: 10px;
+}
+
+.little-button:hover {
+        background-color: lightblue;
+}
+
+textarea {
+        resize: none;
+        overflow: auto;
+}
+
+.textarea-wrapper {
+        position: relative;
+        width: 100%;
+}
+
+/* Style for buttons */
+.textarea-buttons {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        margin-top: 3px;
+}
