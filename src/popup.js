@@ -1,39 +1,18 @@
-// // Function to handle button click event
-// async function handleButtonClick() {
-//         try {
-//                 const type = document.getElementById("range").value;
-//                 const response = await sendMessageToBackground({ action: "generate", type: type });
-//                 if (response && response.htmlContent) {
-//                         generateLocator(response.htmlContent);
-//                 }
-//         } catch (error) {
-//                 console.error("Error:", error);
-//         }
-// }
+// Event listener for button click
+document.addEventListener("DOMContentLoaded", async function () {
+        document.getElementById("generate").addEventListener("click", async () => {
+                const [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
+                const response = await chrome.tabs.sendMessage(tab.id, { action: "getPageHTML" });
+                console.log(response);
+        });
+});
 
-// // Function to send message to background script
-// function sendMessageToBackground(message) {
-//         return new Promise((resolve, reject) => {
-//                 chrome.runtime.sendMessage(message, function (response) {
-//                         if (chrome.runtime.lastError) {
-//                                 reject(chrome.runtime.lastError.message);
-//                         } else {
-//                                 resolve(response);
-//                         }
-//                 });
-//         });
-// }
-
-// // Function to generate locator based on tool and HTML content
-// function generateLocator(htmlContent) {
-//         const tool = document.getElementById("tool").value;
-//         // Call the function to generate locator
-//         // const locator = generateLocator(tool, htmlContent); // Replace with your implementation
-//         // Display the result in textarea
-//         document.getElementById("result").value = htmlContent;
-// }
-
-// // Event listener for button click
-// document.addEventListener("DOMContentLoaded", function () {
-//         document.getElementById("generate").addEventListener("click", handleButtonClick);
-// });
+chrome.runtime.onMessage.addListener(
+        function (request, sender, sendResponse) {
+                console.log(sender.tab ?
+                        "from a content script:" + sender.tab.url :
+                        "from the extension");
+                if (request.pageHTML)
+                        document.getElementById("result").value = request.pageHTML;
+        }
+);
