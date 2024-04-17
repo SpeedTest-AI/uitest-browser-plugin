@@ -6,7 +6,11 @@
         "permissions": [
                 "activeTab",
                 "storage",
-                "scripting"
+                "scripting",
+                "tabs"
+        ],
+        "host_permissions": [
+                "http://127.0.0.1:9099/*"
         ],
         "background": {
                 "service_worker": "background.js"

@@ -3,9 +3,30 @@ document.addEventListener("DOMContentLoaded", async function () {
         document.getElementById("generate").addEventListener("click", async () => {
                 const [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
                 let range = document.getElementById("range");
-                if (range.value === "selectedPage") { const response = await chrome.tabs.sendMessage(tab.id, { action: "getSelectedHTML" }); }
+                if (range.value === "selectedPage") {
+                        const response = await chrome.tabs.sendMessage(tab.id, { action: "getSelectedHTML" });
+                }
                 else { const response = await chrome.tabs.sendMessage(tab.id, { action: "getWholeHTML" }) };
         });
+
+        // document.getElementById("generate").addEventListener("click", function () {
+        //         let range = document.getElementById("range");
+        //         if (range.value === "selectedPage") {
+        //                 chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+        //                         chrome.scripting.executeScript({
+        //                                 target: { tabId: tabs[0].id },
+        //                                 func: () => window.getSelection().toString(),
+        //                         }, (results) => {
+        //                                 console.log("---here is results---" + results.toString())
+        //                                 if (results[0]) {
+        //                                         document.getElementById('result').value = results[0].result;
+        //                                 } else {
+        //                                         document.getElementById('result').value = 'No content selected.';
+        //                                 }
+        //                         });
+        //                 })
+        //         }
+        // });
 
         document.getElementById("clear").addEventListener("click", function () {
                 document.getElementById("result").value = ""
@@ -30,18 +51,44 @@ function getMiddleRowContent(bodyContent, numRows) {
         }
 }
 
-// function geneareLocator() { }
+function geneareLocator(testTool, pageContent) {
+        fetch('http://127.0.0.1:9099/uitest/genWebLocator', {
+                method: 'POST',
+                headers: {
+                        'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                        testTool: testTool,
+                        webPage: pageContent
+                })
+        })
+                .then(response => response.json())
+                .then(data => {
+                        let code = JSON.stringify(data.locators, null, 2);
+                        let formatedCode = code.replace(/(\n)/g, '')
+                        let newCode = formatedCode.replace(/,/g, ',\n').replace(/{/g, '{\n').replace(/}/g, '\n}');
+                        document.getElementById('result').value = newCode;
+                })
+                .catch(error => {
+                        console.error('Error:', error);
+                        document.getElementById('result').value = 'Failed to fetch data';
+                });
+}
 
 chrome.runtime.onMessage.addListener(
         function (request, sender, sendResponse) {
                 console.log(sender.tab ?
                         "from a content script:" + sender.tab.url :
                         "from the extension");
-                console.log(request.pageHTML)
+                const testTool = document.getElementById('tool').value;
                 if (request.type === "getWholeHTML") {
                         const number = document.getElementById('number').value;
-                        document.getElementById("result").value = getMiddleRowContent(request.pageHTML, number);
+                        let pageContent = getMiddleRowContent(request.pageHTML, number);
+                        geneareLocator(testTool, pageContent)
                 }
-                else if (request.type === "getSelectedHTML") { document.getElementById("result").value = request.pageHTML; }
+                else if (request.type === "getSelectedHTML") {
+                        let pageContent = document.getElementById('result');
+                        geneareLocator(testTool, pageContent)
+                }
         }
 );
