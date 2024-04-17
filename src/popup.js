@@ -9,25 +9,6 @@ document.addEventListener("DOMContentLoaded", async function () {
                 else { const response = await chrome.tabs.sendMessage(tab.id, { action: "getWholeHTML" }) };
         });
 
-        // document.getElementById("generate").addEventListener("click", function () {
-        //         let range = document.getElementById("range");
-        //         if (range.value === "selectedPage") {
-        //                 chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-        //                         chrome.scripting.executeScript({
-        //                                 target: { tabId: tabs[0].id },
-        //                                 func: () => window.getSelection().toString(),
-        //                         }, (results) => {
-        //                                 console.log("---here is results---" + results.toString())
-        //                                 if (results[0]) {
-        //                                         document.getElementById('result').value = results[0].result;
-        //                                 } else {
-        //                                         document.getElementById('result').value = 'No content selected.';
-        //                                 }
-        //                         });
-        //                 })
-        //         }
-        // });
-
         document.getElementById("clear").addEventListener("click", function () {
                 document.getElementById("result").value = ""
         })
@@ -52,6 +33,10 @@ function getMiddleRowContent(bodyContent, numRows) {
 }
 
 function geneareLocator(testTool, pageContent) {
+        let spinner = document.getElementById("spinner");
+        let generate = document.getElementById("generate");
+        spinner.hidden = false;
+        generate.disabled = true;
         fetch('http://127.0.0.1:9099/uitest/genWebLocator', {
                 method: 'POST',
                 headers: {
@@ -72,6 +57,9 @@ function geneareLocator(testTool, pageContent) {
                 .catch(error => {
                         console.error('Error:', error);
                         document.getElementById('result').value = 'Failed to fetch data';
+                }).finally(() => {
+                        spinner.hidden = true;
+                        generate.disabled = false;
                 });
 }
 

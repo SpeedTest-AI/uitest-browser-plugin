@@ -1,3 +1,4 @@
+// get selected window does not work
 let currentSelection = 'init';
 document.addEventListener('mouseup', function () { setTimeout(handleSelection, 100); });
 document.addEventListener('touchend', function () { setTimeout(handleSelection, 100); });
