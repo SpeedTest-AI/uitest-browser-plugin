@@ -2,7 +2,7 @@
         "manifest_version": 3,
         "name": "Gen Locators",
         "version": "1.0",
-        "description": "Gen locators base on web page content",
+        "description": "Gen locators base on web/mobile page content",
         "permissions": [
                 "activeTab",
                 "storage",
