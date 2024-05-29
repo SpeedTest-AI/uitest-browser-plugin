@@ -1,4 +1,3 @@
-// Event listener for button click
 document.addEventListener("DOMContentLoaded", async function () {
         document.getElementById("generate").addEventListener("click", async () => {
                 const [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
@@ -62,12 +61,13 @@ function handleWebContent(bodyContent, numRows) {
 }
 
 function generateLocator(testTool, platform, pageContent) {
+        const baseUrl = "http://127.0.0.1:9099";
         let spinner = document.getElementById("spinner");
         let generate = document.getElementById("generate");
         spinner.hidden = false;
         generate.disabled = true;
-        if (testTool.startsWith('appium')) {
-                fetch('http://127.0.0.1:9099/mobiletest/genMobileLocator', {
+        if (testTool.startsWith('WebdriverIO')) {
+                fetch(`${baseUrl}/mobiletest/genMobileLocator`, {
                         method: 'POST',
                         headers: {
                                 'Content-Type': 'application/json'
@@ -80,10 +80,7 @@ function generateLocator(testTool, platform, pageContent) {
                 })
                         .then(response => response.json())
                         .then(data => {
-                                let code = JSON.stringify(data.locators, null, 2);
-                                let formatedCode = code.replace(/(\n)/g, '')
-                                let newCode = formatedCode.replace(/,/g, ',\n').replace(/{/g, '{\n').replace(/}/g, '\n}');
-                                document.getElementById('result').value = newCode;
+                                document.getElementById('result').value = data.locators;
                         })
                         .catch(error => {
                                 console.error('Error:', error);
@@ -94,7 +91,7 @@ function generateLocator(testTool, platform, pageContent) {
                         });
         }
         else {
-                fetch('http://127.0.0.1:9099/uitest/genWebLocator', {
+                fetch(`${baseUrl}/uitest/genWebLocator`, {
                         method: 'POST',
                         headers: {
                                 'Content-Type': 'application/json'
@@ -106,10 +103,7 @@ function generateLocator(testTool, platform, pageContent) {
                 })
                         .then(response => response.json())
                         .then(data => {
-                                let code = JSON.stringify(data.locators, null, 2);
-                                let formatedCode = code.replace(/(\n)/g, '')
-                                let newCode = formatedCode.replace(/,/g, ',\n').replace(/{/g, '{\n').replace(/}/g, '\n}');
-                                document.getElementById('result').value = newCode;
+                                document.getElementById('result').value = data.locators;
                         })
                         .catch(error => {
                                 console.error('Error:', error);
@@ -135,7 +129,7 @@ chrome.runtime.onMessage.addListener(
                 }
                 else if (request.type === "getSelectedHTML") {
                         let pageContent = document.getElementById('result');
-                        if (testTool.startsWith('appium')) {
+                        if (testTool.startsWith('WebdriverIO')) {
                                 let newPageContent = handleMobileContent(pageContent, number)
                                 generateLocator(testTool, platform, newPageContent)
                         } else {
